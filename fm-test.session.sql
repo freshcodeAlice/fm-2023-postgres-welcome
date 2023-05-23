@@ -116,14 +116,16 @@ numeric(точність, масштаб)
 
 */
 
+DROP TABLE users;
+
 CREATE TABLE users(
-    first_name varchar(300),
-    last_name varchar(300),
-    email varchar(500),
+    first_name varchar(300) NOT NULL CHECK (first_name != ''),
+    last_name varchar(300) NOT NULL CHECK (last_name != ''),
+    email varchar(500) NOT NULL CHECK (email != ''),
     age date,
-    is_subscribe boolean,
-    height numeric(3, 2),
-    weight int
+    is_subscribe boolean NOT NULL,
+    height numeric(3, 2) CHECK (height > 0 AND height < 5.0),
+    weight int CHECK (weight > 0)
 );
 
 /* 1.95 або 0.80 або 3.20 */
@@ -144,3 +146,31 @@ INSERT INTO users VALUES
 /* Помилка - неправильний тип даних! */
 INSERT INTO users VALUES 
 (true, 'Odinsson', 'super@avenger.com', '1990-09-02', 'not subscribe', 90);
+
+INSERT INTO users VALUES 
+(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO users VALUES 
+('вв', 'ввв', 'ddd', '1000-01-01', false, -2.03, 1);
+
+
+/* CONSTRAINT  - обмеження
+NOT NULL - в цьому стовпці NULL не дозволено
+CHECK (умова істиності) - констрейнт-перевірка, яка буде перевіряти значення при кожному інсерті значень
+
+Обмеження - це об'єкти таблиці
+
+Констрейнт (обмеження) має ім'я
+Автоматично складається з 
+таблиця_стовбець_тип-перевірки
+
+*/
+
+
+/*
+
+products(
+    price numeric(10, 2)
+    discounted_price numeric(10, 2),
+    CONSTRAINT "discount" CHECK (price < discounted_price)
+)
