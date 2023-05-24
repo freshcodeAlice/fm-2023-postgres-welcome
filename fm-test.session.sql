@@ -174,3 +174,37 @@ products(
     discounted_price numeric(10, 2),
     CONSTRAINT "discount" CHECK (price < discounted_price)
 )
+
+*/
+
+
+
+----------------------
+
+CREATE TABLE messages (
+    body text NOT NULL CHECK (body != ''),
+    author varchar(300) NOT NULL CHECK (author != ''),
+    created_at timestamp DEFAULT current_timestamp,
+    is_read boolean DEFAULT false 
+);
+
+INSERT INTO messages (body, author) VALUES 
+('Test message', 'Me');
+
+INSERT INTO messages (author, body) VALUES
+('You', 'Go to coffes');
+
+
+INSERT INTO messages (author, body) VALUES
+('Me', 'Im on it'),
+('You', 'Meet me on the corner'),
+('Me', 'Ok');
+
+/*
+INSERT (з перерахуванням)
+
+INSERT INTO ім'я_таблиці (імена стовпців в тому порядку, який нам потрібен) VALUES 
+(перерахування значень в порядку стовпців який ми визначили)
+
+
+*/
