@@ -208,3 +208,212 @@ INSERT INTO ім'я_таблиці (імена стовпців в тому по
 
 
 */
+
+
+
+---- ідентифікація даних -----
+
+/*
+- за природніми ознаками - певні дані, які ВЖЕ Є в тих даних, які прийшли
+(унікальні дані, на які ми можемо спиратися для ідентифікації рядка в таблиці)
+
+- за штучними ознаками
+(певні дані, які ми ДОМІШУЄМО до існуючих, для забезпечення ідентифікації)
+
+- за зв'язком об'єктів
+(коли ідентифікація сутності відбувається за зв'язком з іншою сутністю)
+
+Умова для ідентифікатора:
+- унікальне (не повторюється)
+- існує (не null)
+
+*/
+
+DROP TABLE messages;
+
+CREATE TABLE messages (
+    id serial NOT NULL UNIQUE,
+    body text NOT NULL CHECK (body != ''),
+    author varchar(300) NOT NULL CHECK (author != ''),
+    created_at timestamp DEFAULT current_timestamp,
+    is_read boolean DEFAULT false 
+);
+
+INSERT INTO messages (id, body, author) VALUES
+(5, 'Hi', 'Y');
+
+
+/* Key 
+
+Первинний ключ (primary key)
+Ключ - унікальні дані (ідентифікатор), який однозначно ідентифікує рядки в таблиці
+
+*/
+
+
+DROP TABLE messages;
+
+CREATE TABLE messages (
+    id serial PRIMARY KEY,
+    body text NOT NULL CHECK (body != ''),
+    author varchar(300) NOT NULL CHECK (author != ''),
+    created_at timestamp DEFAULT current_timestamp,
+    is_read boolean DEFAULT false 
+);
+
+
+/*
+PRIMARY KEY по двом стовпцям
+
+*/
+
+--- Задача: в таблиці юзерів не може бути людей з однаковим іменем+прізвищем
+
+CREATE TABLE unique_users(
+    first_name varchar(300),
+    last_name varchar(300),
+    PRIMARY KEY (first_name, last_name)
+);
+
+INSERT INTO unique_users VALUES
+('Vasya', 'Petrov'),
+('Vasya', 'Vasechkin'),
+('Petya', 'Petrov');
+
+INSERT INTO unique_users VALUES
+('Vasya', 'Petrov');
+
+
+
+/*
+Зробити таблицю юзерів, в якій мейл буде первинним ключем
+
+*/
+
+
+DROP TABLE users;
+
+CREATE TABLE users(
+    first_name varchar(300) NOT NULL CHECK (first_name != ''),
+    last_name varchar(300) NOT NULL CHECK (last_name != ''),
+    email varchar(500) CHECK (email != ''),
+    age date,
+    is_subscribe boolean NOT NULL,
+    height numeric(3, 2) CHECK (height > 0 AND height < 5.0),
+    weight int CHECK (weight > 0),
+    CONSTRAINT "unique_email" PRIMARY KEY (email)
+);
+
+
+INSERT INTO users (first_name, last_name, email, age, is_subscribe) VALUES
+('test1', 'test2','mail', '1990-09-09', false);
+
+
+INSERT INTO users (first_name, last_name, email, age, is_subscribe) VALUES
+('test1', 'test2','mail1', '1990-09-09', false),
+('test1', 'test2','mail3', '1990-09-09', false);
+
+INSERT INTO users (first_name, last_name, email, age, is_subscribe) VALUES
+('test2', 'test3','mail', '1990-09-09', false);
+
+
+
+-----Редагування існуючої таблиці----
+
+/*
+ALTER - команда для зміни
+
+ALTER TABLE -  зміна опису таблиці
+*/
+
+ALTER TABLE users
+ADD COLUMN order_quantity int NOT NULL;
+
+
+ALTER TABLE users
+DROP COLUMN order_quantity;
+
+
+/* 
+Додавання нового стовпця в існуючу таблицю, якщо дані протирічать обмеженням нового стовпця
+
+Варіант 1:
+- Додати дефолтне значення, і дані переконвертуються автоматично
+
+Варіант 2:
+- Спочатку створюємо стовбець (без обмеження)
+- Вручну оновлюємо дані в таблиці
+- Додати обмеження у існуючу таблицю (до існуючого стовпця)
+*/
+
+ALTER TABLE users
+ADD COLUMN order_quantity int;
+
+UPDATE users
+SET order_quantity = 5;
+
+ALTER TABLE users
+ALTER COLUMN order_quantity SET NOT NULL;
+
+
+
+---------
+
+
+INSERT INTO users (first_name, last_name, email, age, is_subscribe, height, order_quantity) VALUES
+('test2', 'test3','3422323334', '1990-09-09', false, 5.4, 7);
+
+
+--v1
+ALTER TABLE users
+DROP CONSTRAINT "users_height_check";
+
+
+UPDATE users
+SET height = 3.0
+WHERE height > 3.0;
+
+ALTER TABLE users
+ADD CONSTRAINT "too_high" CHECK (height > 0 AND height < 4.0);
+
+
+/*
+Створити таблицю юзерів
+1. Пара ім'я + прізвище має бути унікальним
+2. Повне ім'я - не пустий рядок
+3. Додати юзерам id
+
+----
+Після створення таблиці внести такі зміни:
+- Додати користувачу стовбець "розмір ноги", тип данних - int
+Розмір ноги не може бути більше 50
+
+- Додати обмеження - користувач не може народитися раніше 1900
+
+
+Задачка з *:
+Відредагувати обмеження дати народження
+- користувач народився не раніше 1900 і не пізніше сьогоднішнього дня
+
+*/
+
+DROP TABLE unique_users;
+
+
+CREATE TABLE users (
+    first_name varchar(300),
+    last_name varchar(300),
+    CONSTRAINT "unique_pair_name" UNIQUE(first_name, last_name)
+    CONSTRAINT "not_empty_name" CHECK (first_name != '' AND last_name != '')
+);
+
+
+ALTER TABLE users
+ADD COLUMN foot_size int CHECK (foot_size < 50);
+
+ALTER TABLE users
+ADD COLUMN birthday date;
+
+
+ALTER TABLE users
+ADD CONSTRAINT "birthday_check" CHECK (birthday > '1900-01-01' AND birthday < current_date);
