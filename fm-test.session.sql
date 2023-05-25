@@ -417,3 +417,5 @@ ADD COLUMN birthday date;
 
 ALTER TABLE users
 ADD CONSTRAINT "birthday_check" CHECK (birthday > '1900-01-01' AND birthday < current_date);
+
+-------------
