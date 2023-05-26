@@ -183,4 +183,99 @@ DROP TABLE coaches;
 ----------
 
 
-DROP TABLE orders;
+SELECT * FROM users;
+
+
+
+---------Practice-----------
+
+/* Задача: реалізувати чат між юзерами */
+
+CREATE TABLE chats (
+    id serial PRIMARY KEY,
+    name varchar(250) CHECK (name != ''),
+    owner_id int REFERENCES users(id),
+    created_at timestamp NOT NULL DEFAULT current_timestamp
+);
+
+
+CREATE TABLE users_to_chats (
+    user_id int REFERENCES users(id),
+    chat_id int REFERENCES chats(id),
+    join_at timestamp DEFAULT current_timestamp,
+    PRIMARY KEY (user_id, chat_id)
+);
+
+
+
+CREATE TABLE messages (
+    id serial PRIMARY KEY,
+    body text NOT NULL CHECK (body != ''),
+    created_at timestamp DEFAULT current_timestamp,
+    author_id int,
+    chat_id int,
+    FOREIGN KEY (author_id, chat_id) REFERENCES users_to_chats (user_id, chat_id)
+);
+
+
+----
+
+
+INSERT INTO chats (name, owner_id) VALUES
+('First chat', 1),
+('Second chat', 2),
+('Superchat', 2);
+
+
+INSERT INTO users_to_chats (user_id, chat_id) VALUES
+(2, 1),
+(3, 1),
+(2, 2), 
+(4, 2);
+
+INSERT INTO messages (
+    body, author_id, chat_id
+) VALUES
+('Hi!', 2, 1),
+('Hello', 3, 1),
+('Go to coffe', 2, 2),
+('How are you?', 4, 2);
+
+
+
+/*
+
+Контент
+- ім'я (назва),
+- опис
+- дата створення
+
+Реакції
+- is_liked:
+    true - лайкнуте
+    false - дизлайкнуте
+    null - конкретний користувач прибрав оцінку або її немає
+
+Реакції - це зв'язок між контентом і користувачем
+
+
+*/
+
+DROP TABLE contents;
+
+CREATE TABLE contents (
+    id serial PRIMARY KEY,
+    name varchar(250) NOT NULL CHECK (name != ''), 
+    description text,
+    author_id int REFERENCES users(id),
+    created_at timestamp DEFAULT current_timestamp
+);
+
+DROP TABLE reactions;
+
+CREATE TABLE reactions (
+    user_id int REFERENCES users(id),
+    content_id int REFERENCES contents(id),
+    is_liked boolean,
+    PRIMARY KEY (user_id, content_id)
+);
