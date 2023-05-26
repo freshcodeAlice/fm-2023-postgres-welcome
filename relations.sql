@@ -279,3 +279,61 @@ CREATE TABLE reactions (
     is_liked boolean,
     PRIMARY KEY (user_id, content_id)
 );
+
+
+
+/*
+1. Зробити нову БД
+2. Підключитись до цієї БД (зробити нове підключення для розширення ВСКОД)
+
+3. Спроєктувати таку структуру:
+
+Студент, група, факультет, дисципліна
+
+Студент має
+- ім'я
+- прізвише
+- власний id
+- посилання на групу
+
+Група має
+- назву
+- посилання на факультет
+
+На факультеті викладаються дисципліни.
+Студенти сдають екзамени з дисциплін.
+
+
+
+
+*/
+
+CREATE TABLE departments (
+    name varchar(300) PRIMARY KEY
+);
+
+
+CREATE TABLE groups (
+    name varchar(300)PRIMARY KEY,
+    department varchar(300) REFERENCES departments(name)
+);
+
+CREATE TABLE students (
+    id serial PRIMARY KEY,
+    first_name varchar(300) NOT NULL CHECK (first_name != ''),
+    last_name varchar(300) NOT NULL CHECK (last_name != ''),
+    group varchar(300) REFERENCES groups(name) 
+);
+
+
+CREATE TABLE subjects(
+    name varchar(300) PRIMARY KEY
+);
+
+
+CREATE TABLE exams (
+    student_id int REFERENCES students(id),
+    subject varchar(300) REFERENCES subjects(name),
+    grade int,
+    exam_date date DEFAULT current_date
+);
