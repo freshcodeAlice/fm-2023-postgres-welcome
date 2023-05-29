@@ -1,4 +1,5 @@
 const {Client} = require('pg');
+const {mapUsers} = require('./utils/mapUsers');
 
 const config = {
     host: 'localhost',
@@ -16,15 +17,28 @@ async function start() {
     await client.connect();
     // робимо роботу
     
-    const user = {
-        firstName: 'Harry',
-        lastName: 'Potter',
-        email: 'potter@hogwarts.com',
+    const users = [{
+        firstName: 'Ron',
+        lastName: 'Wesley',
+        email: 'ron@hogwarts.com',
         birthday: '1990-01-02',
         isSubscribe: false
-    }
+    }, {
+        firstName: 'Hermany',
+        lastName: 'Grandger',
+        email: 'hermy@hogwarts.com',
+        birthday: '1990-01-02',
+        isSubscribe: false
+    },{
+        firstName: 'Draco',
+        lastName: 'Malfoy',
+        email: 'draco@hogwarts.com',
+        birthday: '1990-01-02',
+        isSubscribe: false
+    }]
+    
 
-    const res = await client.query(`INSERT INTO users (first_name, last_name, email, birthday, is_subscribe) VALUES ('${user.firstName}', '${user.lastName}', '${user.email}', '${user.birthday}', ${user.isSubscribe});`);
+    const res = await client.query(`INSERT INTO users (first_name, last_name, email, birthday, is_subscribe) VALUES ${mapUsers(users)};`);
 
     console.log(res);
     
