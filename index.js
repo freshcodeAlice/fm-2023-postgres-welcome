@@ -1,14 +1,12 @@
-const {Client} = require('pg');
-const {mapUsers} = require('./utils/mapUsers');
 const {getUsers} = require('./api/getUsers');
-const {config} = require('./config');
-
-const client = new Client(config);
+const { User, client } = require('./models');
 
 
 async function start() {
+
     // робимо коннект (підключення до БД)
-    await client.connect();
+        await client.connect();
+    
     // робимо роботу
     
     /// зробити запит на randomUser
@@ -16,7 +14,7 @@ async function start() {
 
     //передати результати запиту функції mapUsers
 
-    const res = await client.query(`INSERT INTO users (first_name, last_name, email, birthday, is_subscribe, gender) VALUES ${mapUsers(users)};`);
+    const res = await User.bulkCreate(users);
 
     console.log(res);
     
