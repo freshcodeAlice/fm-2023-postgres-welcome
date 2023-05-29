@@ -1,13 +1,7 @@
 const {Client} = require('pg');
 const {mapUsers} = require('./utils/mapUsers');
-
-const config = {
-    host: 'localhost',
-    database: 'fm_2023_test',
-    user: 'postgres',
-    password: '718',
-    port: 5432
-}
+const {getUsers} = require('./api/getUsers');
+const {config} = require('./config');
 
 const client = new Client(config);
 
@@ -17,28 +11,12 @@ async function start() {
     await client.connect();
     // робимо роботу
     
-    const users = [{
-        firstName: 'Ron',
-        lastName: 'Wesley',
-        email: 'ron@hogwarts.com',
-        birthday: '1990-01-02',
-        isSubscribe: false
-    }, {
-        firstName: 'Hermany',
-        lastName: 'Grandger',
-        email: 'hermy@hogwarts.com',
-        birthday: '1990-01-02',
-        isSubscribe: false
-    },{
-        firstName: 'Draco',
-        lastName: 'Malfoy',
-        email: 'draco@hogwarts.com',
-        birthday: '1990-01-02',
-        isSubscribe: false
-    }]
-    
+    /// зробити запит на randomUser
+    const users = await getUsers();
 
-    const res = await client.query(`INSERT INTO users (first_name, last_name, email, birthday, is_subscribe) VALUES ${mapUsers(users)};`);
+    //передати результати запиту функції mapUsers
+
+    const res = await client.query(`INSERT INTO users (first_name, last_name, email, birthday, is_subscribe, gender) VALUES ${mapUsers(users)};`);
 
     console.log(res);
     
