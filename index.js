@@ -15,7 +15,7 @@ async function start() {
 
     //передати результати запиту функції mapUsers
 
-    const {rows: users} = await User.bulkCreate(userArray);
+    const {rows: users} = await User.findAll();
     const {rows: phones} = await Phone.bulkCreate(generatePhones());
     const {rows: orders} = await Order.bulkCreate(users, phones);
 
