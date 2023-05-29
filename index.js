@@ -19,8 +19,7 @@ async function start() {
     const {rows: phones} = await Phone.bulkCreate(generatePhones());
     const {rows: orders} = await Order.bulkCreate(users, phones);
 
-    console.log(res);
-    
+   
     // закриваємо за собою підключення
     await client.end();
 }
