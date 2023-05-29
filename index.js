@@ -1,5 +1,6 @@
 const {getUsers} = require('./api/getUsers');
-const { User, client } = require('./models');
+const { User, client, Phone, Order } = require('./models');
+const {generatePhones} = require('./utils/generateProducts');
 
 
 async function start() {
@@ -10,11 +11,13 @@ async function start() {
     // робимо роботу
     
     /// зробити запит на randomUser
-    const users = await getUsers();
+    const userArray = await getUsers();
 
     //передати результати запиту функції mapUsers
 
-    const res = await User.bulkCreate(users);
+    const {rows: users} = await User.bulkCreate(userArray);
+    const {rows: phones} = await Phone.bulkCreate(generatePhones());
+    const {rows: orders} = await Order.bulkCreate(users, phones);
 
     console.log(res);
     
