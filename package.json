@@ -1,0 +1,23 @@
+{
+  "name": "fm-2023-postgres-welcome",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freshcodeAlice/fm-2023-postgres-welcome.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/freshcodeAlice/fm-2023-postgres-welcome/issues"
+  },
+  "homepage": "https://github.com/freshcodeAlice/fm-2023-postgres-welcome#readme",
+  "dependencies": {
+    "pg": "^8.11.0"
+  }
+}
