@@ -174,3 +174,45 @@ WHERE gender = 'female';
 UPDATE users
 SET height = 1.85
 WHERE id % 2 = 0;
+
+
+/*
+Оновити висоту всіх підписаних жінок
+встановити 1.75
+
+*/
+
+
+UPDATE users
+SET height = 1.75
+WHERE gender = 'female' AND is_subscribe;
+
+
+/*
+
+employees - робітники, співробітники
+- ім'я (name)
+- зарплата (salary)
+- кількість відпрацьованих годин (work_hours)
+
+Задача: всім робітникам, які відпрацювали більше ніж 150 годин
+збільшити зп на 20%
+
+UPDATE employees
+SET salary = salary * 1.2
+WHERE work_hours > 150;
+
+*/
+
+
+---- DELETE ---
+
+INSERT INTO users (first_name, last_name, email, is_subscribe) VALUES
+('Test', 'Testovich', 'tester', true);
+
+SELECT * FROM users
+WHERE id = 1009;
+
+DELETE 
+FROM users
+WHERE id = 100;
