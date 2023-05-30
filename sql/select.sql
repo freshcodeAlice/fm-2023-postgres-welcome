@@ -144,3 +144,33 @@ _ - 1 будь-який символ
 
 SELECT * FROM users
 WHERE first_name LIKE '_____';
+
+
+-----------------
+
+
+ALTER TABLE users
+ADD COLUMN height numeric(3, 2);
+
+ALTER TABLE users
+ADD COLUMN weight int;
+
+------
+
+
+UPDATE users
+SET weight = 60
+WHERE gender = 'female';
+
+
+
+------
+
+
+UPDATE users
+SET height = 1.90
+WHERE gender = 'female';
+
+UPDATE users
+SET height = 1.85
+WHERE id % 2 = 0;

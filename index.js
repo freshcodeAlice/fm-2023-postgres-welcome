@@ -2,7 +2,7 @@ const {getUsers} = require('./api/getUsers');
 const { User, client, Phone, Order } = require('./models');
 const {generatePhones} = require('./utils/generateProducts');
 
-
+/*
 async function start() {
 
     // робимо коннект (підключення до БД)
@@ -23,5 +23,18 @@ async function start() {
     // закриваємо за собою підключення
     await client.end();
 }
+*/
 
-start();
+//start();
+
+
+
+async function updateHeight() {
+    await client.connect();
+
+    const res = await User.updateHeight();
+    console.log(res);
+    await client.end();
+}
+
+updateHeight();
