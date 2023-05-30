@@ -208,11 +208,130 @@ WHERE work_hours > 150;
 ---- DELETE ---
 
 INSERT INTO users (first_name, last_name, email, is_subscribe) VALUES
-('Test', 'Testovich', 'tester', true);
+('Test', 'Testovich', 'tester', true) RETURNING *;
 
 SELECT * FROM users
-WHERE id = 1009;
+WHERE id = 1010;
 
 DELETE 
 FROM users
-WHERE id = 100;
+WHERE id = 1010
+RETURNING *;
+
+
+
+----------
+
+--- Ім'я довше за 5 літер
+
+SELECT * FROM users
+WHERE char_length(first_name) > 5; 
+
+UPDATE users
+SET first_name = upper(first_name)
+WHERE id = 1;
+
+
+--- Вивести юзерів зі всією їхньою інформацією + стовбцем з повного імені користувача
+
+SELECT *, concat(first_name, ' ', last_name) FROM users;
+
+
+-- Всі дані + стовбець з кількістю літер імені
+SELECT *, char_length(first_name) FROM users;
+
+
+--------- Псевдоніми (аліас) ---------
+
+
+---Вивести мейли користувачів під грифом "пошта", ім'я називалося "ім'я", height називався зріст
+
+SELECT email AS "Пошта", first_name AS "Ім'я", height AS "Зріст"
+FROM users;
+
+
+/*
+Вивести користувачів, id назвати як "Порядковий номер", first_name + last_name вивести як "Повне ім'я" 
+і is_subsdcribe вивести як "Підписка"
+*/
+
+
+SELECT id AS "Порядковий номер", concat(first_name, ' ', last_name) AS "Повне ім'я", is_subscribe AS "Підписка"
+FROM users;
+
+
+SELECT * 
+FROM users AS u
+WHERE u.id = 1;
+
+
+--------------
+
+SELECT *, extract(years from age(birthday)) 
+FROM users;
+
+
+/*
+1. Отримати всіх жінок, ім'я яких починається на "А"
+
+2. Отримати всіх повнолітніх чоловіків
+
+3. Отримати всіх користувачів, які народились у вересні
+
+*/
+
+--1
+SELECT * 
+FROM users
+WHERE (first_name LIKE 'A%') AND gender = 'female';
+
+
+--2
+SELECT * 
+FROM users
+WHERE (extract(years from age(birthday)) >= 18) AND (gender = 'male');
+
+
+--3
+SELECT * 
+FROM users
+WHERE extract(month from birthday) = 9;
+
+
+/*
+4. Всіх користувачів віком від 20 до 40 років
+
+5. Всім користувачам, які народились у січні, оновити підписку  на TRUE
+
+6. Оновити зріст всім користувачам, старшим за 60 років.
+Встановити 1.78
+
+7. Всім користувачам, зріст яких більше 2 метрів, встановити вагу 90кг.
+
+
+
+*/
+
+---4
+
+SELECT * 
+FROM users
+WHERE extract(years from age(birthday)) BETWEEN 20 AND 40;
+
+
+--5
+UPDATE users
+SET is_subscribe = TRUE
+WHERE extract(month from birthday) = 1;
+
+
+--6
+UPDATE users
+SET height = 1.78
+WHERE extract(years from age(birthday)) > 60;
+
+
+--7
+UPDATE users
+SET weight = 90
+WHERE height > 2.0;
