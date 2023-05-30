@@ -335,3 +335,29 @@ WHERE extract(years from age(birthday)) > 60;
 UPDATE users
 SET weight = 90
 WHERE height > 2.0;
+
+
+
+------Pagination--------
+
+SELECT * 
+FROM users
+LIMIT 10; --- обмежує кількість результатів (рядків)
+
+ SELECT * 
+ FROM users
+ OFFSET 20
+ LIMIT 10;
+
+
+ /*
+Пагінація = відступ + обмеження кількості
+
+page 1, по 50 товарів на сторінці
+OFFSET 0, LIMIT 50
+
+page2
+OFFSET 50, LIMIT 50
+
+OFFSET = LIMIT * (page - 1)
+ */
