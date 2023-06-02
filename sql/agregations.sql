@@ -307,3 +307,13 @@ FROM orders
 GROUP BY customer_id
 HAVING count(*) > 2
 ORDER BY quantity, customer_id;
+
+
+/*
+Вивести всі бренди, в яких сумарна кількість телефонів > 1000
+*/
+
+SELECT brand, sum(quantity) 
+FROM products
+GROUP BY brand
+HAVING sum(quantity) > 1000;
