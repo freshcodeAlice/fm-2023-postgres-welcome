@@ -66,3 +66,46 @@ SELECT avg(height), gender
 FROM users
 WHERE extract(years from age(birthday)) > 25
 GROUP BY gender;
+
+/*
+Практика:
+
+1. Визначити середній зріст всіх чоловіків та жінок
+2. Мінімальний та максимальний зріст чоловіків та жінок
+3. Кількість юзерів, які народилися після 1998
+4. Кількість людей з певним ім'ям. 
+5. Кількість юзерів віком від 20 до 30 років.
+
+
+*/
+--1
+SELECT avg(height), gender
+FROM users
+GROUP BY gender;
+
+--2
+SELECT min(height), max(height), gender
+FROM users
+GROUP BY gender;
+
+
+--3
+SELECT count(*)
+FROM users
+WHERE extract(years from birthday) > 1998;
+
+--4
+SELECT count(*)
+FROM users
+WHERE first_name LIKE 'Kate';
+
+
+SELECT count(*)
+FROM users
+WHERE first_name LIKE 'K%';
+
+
+--5
+SELECT count(*)
+FROM users
+WHERE extract(years from age(birthday)) BETWEEN 20 AND 30;
