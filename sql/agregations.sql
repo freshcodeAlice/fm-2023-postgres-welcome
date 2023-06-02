@@ -170,3 +170,140 @@ WHERE brand = 'Nokia';
 SELECT count(*), customer_id
 FROM orders
 GROUP BY customer_id;
+
+
+
+/* Сортування */
+
+/*
+ORDER BY за_яким_значенням в_якому_порядку, правило_сортування2
+
+правило сортування складається з
+- значення, за яким сортується
+- порядок сортування
+
+ASC - за збільшенням
+DESC - за зменшенням
+
+за замовчуванням порядок сортування - за збільшенням (ASCENDING) - ASC
+
+*/
+
+--- Вивести всіх користувачів, відсортувавши їх по зросту у зворотньому порядку
+SELECT * 
+FROM users
+ORDER BY height DESC;
+
+
+/* Відсортуйте користувачів за id у прямому порядку */
+SELECT * FROM users
+ORDER BY id;
+
+
+--- Вивести всіх користувачів, відсортувавши їх по зросту у зворотньому порядку, всередині кожної групи за зростом - ще за id
+SELECT * 
+FROM users
+ORDER BY height DESC, id ASC;
+
+
+--- За алфавітом (по імені)
+SELECT * 
+FROM users
+ORDER BY first_name ASC;
+
+
+--- За алфавітом по імені та прізвищу
+SELECT * 
+FROM users
+ORDER BY first_name ASC, last_name ASC;
+
+
+--- Вісортувати юзерів спочатку за іменем, потім за датою народження
+SELECT *
+FROM users
+ORDER BY first_name ASC, birthday ASC;
+
+---- Відсортувати за іменем, датою народження і за прізвищем
+SELECT *
+FROM users
+ORDER BY first_name ASC, birthday ASC, last_name ASC;
+
+
+
+--- якого телефона на складі менше за інших
+
+SELECT min(quantity)
+FROM products;
+
+SELECT min(quantity), brand
+FROM products
+GROUP BY brand;
+
+
+SELECT * 
+FROM products
+ORDER BY quantity
+LIMIT 1;
+
+--- Три товари, яких на складі найменше
+
+SELECT * 
+FROM products
+ORDER BY quantity
+LIMIT 3;
+
+
+/*
+Топ-5 найдорожчих телефонів на нашому складі
+*/
+
+SELECT * 
+FROM products
+ORDER BY price DESC
+LIMIT 5;
+
+
+/*
+Вісортуйте користувачів за кількістю повних років і за іменем, якщо вік однаковий
+і додайте кількість повних років до виводу таблиці
+
+*/
+
+
+SELECT *, extract(years from age(birthday)) AS age
+FROM users
+ORDER BY age, first_name;
+
+
+--- Скільки людей одного віку
+
+SELECT extract(years from age(birthday)) AS age, count(*) AS "Кількість однолітків"
+FROM users
+GROUP BY age;
+
+
+SELECT count(*), u_w_age.age
+FROM (
+    SELECT extract(years from age(birthday)) AS age, *
+    FROM users
+) AS u_w_age
+GROUP BY u_w_age.age
+ORDER BY u_w_age.age;
+
+
+-- Отримати всіх юзерів, які робили найбільшу кількість замовлень
+
+SELECT count(*), customer_id 
+FROM orders
+GROUP BY customer_id
+ORDER BY count(*);
+
+
+/* Фільтрація груп */
+
+--- Тільки тих юзерів, в яких кількість замовлень > 2
+SELECT count(*) as quantity, customer_id 
+FROM orders
+GROUP BY customer_id
+HAVING count(*) > 2
+ORDER BY quantity, customer_id;
