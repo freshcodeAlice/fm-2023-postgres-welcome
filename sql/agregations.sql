@@ -109,3 +109,64 @@ WHERE first_name LIKE 'K%';
 SELECT count(*)
 FROM users
 WHERE extract(years from age(birthday)) BETWEEN 20 AND 30;
+
+
+
+-------
+
+
+-- Порахувати кількість телефонів, які були продані
+
+SELECT sum(quantity)
+FROM orders_to_products;
+
+
+/*
+
+1. Кількість всіх товарів на складі
+
+2. Середня ціна всіх телефонів
+
+3. Середня ціна кожного бренду
+
+4. Кількість моделей кожного бренду
+
+5. Середню ціну нокії
+
+6. Кількість замовлень кожного юзера (який робив замовлення).
+
+*/
+
+
+--1
+SELECT sum(quantity)
+FROM products;
+
+
+--2
+SELECT avg(price)
+FROM products;
+
+
+---3
+SELECT avg(price), brand
+FROM products
+GROUP BY brand;
+
+
+--4
+SELECT count(*), brand
+FROM products
+GROUP BY brand;
+
+
+--5
+SELECT avg(price)
+FROM products
+WHERE brand = 'Nokia';
+
+
+--6
+SELECT count(*), customer_id
+FROM orders
+GROUP BY customer_id;
