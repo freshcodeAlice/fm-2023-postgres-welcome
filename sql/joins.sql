@@ -160,3 +160,235 @@ SELECT customer_id FROM orders;
 SELECT id FROM users
 INTERSECT
 SELECT customer_id FROM orders;
+
+
+
+--------
+
+/*
+Задача: отримати пошту ююзерів, які нічого не купували
+
+*/
+
+-- bad version
+SELECT email FROM users
+WHERE id IN (SELECT id FROM users
+EXCEPT
+SELECT customer_id FROM orders);
+
+
+-------
+
+--- Об'єднання таблиць за умовою
+SELECT A.v AS id, A.t AS price, B.v AS phone_number FROM a, b
+WHERE A.v = B.v;
+
+
+-- Всі значення з А, яких нема в В
+
+SELECT a.v AS id, a.t AS price 
+FROM a
+WHERE a.v NOT IN (SELECT * FROM b);
+
+
+
+
+-----JOIN------
+
+
+SELECT * 
+FROM A JOIN B
+ON A.v = B.v;
+
+
+/*
+Всю інформацію про юезра №4 і всі замовлення, які він робив
+
+*/
+
+SELECT * 
+FROM orders AS o
+JOIN users AS u
+ON o.customer_id = u.id;
+
+
+
+
+/*
+Отримати всі повідомлення та інформацію про перший чат
+
+*/
+
+SELECT * 
+FROM chats AS c
+JOIN messages AS m 
+ON c.id = m.chat_id
+WHERE c.id = 1;
+
+
+/*
+Витягти всю інформацію про власників чатів та інформацію про чати
+
+*/
+
+
+SELECT * 
+FROM chats AS c 
+JOIN users AS u 
+ON c.owner_id = u.id;
+
+
+/*
+Витягти всіх юзерів, які спілкуються у першому чаті разом з інформацією про цих юзерів та чат
+
+*/
+
+
+SELECT 
+  u.id AS user_id,
+  c.id AS chat_id,
+  u.first_name AS name,
+  u.last_name AS last_name,
+  u.email AS email 
+FROM messages AS m 
+JOIN chats AS c 
+ON m.chat_id = c.id
+JOIN users AS u 
+ON m.author_id = u.id
+WHERE c.id = 1;
+
+
+
+/*
+
+Задача: знайти номери замовлень, в яких були замовлені телефони Samsung
+
+
+Декомпозуємо задачу:
+1. Бренд в таблиці products
+  Номери замовлень в orders, orders_to_products
+
+2. Робимо вибірку по бренду
+*/
+
+SELECT * 
+FROM products AS p 
+JOIN orders_to_products AS otp
+ON p.id = otp.product_id
+WHERE p.brand = 'Samsung';
+
+
+---- Скільки моделей самсунга було в одному замовленні
+
+SELECT count(*), p.model 
+FROM products AS p 
+JOIN orders_to_products AS otp
+ON p.id = otp.product_id
+WHERE p.brand = 'Samsung'
+GROUP BY p.model;
+
+
+
+/*
+Дізнатися кількість замовлень на кожен бренд
+
+*/
+
+
+ SELECT count(*), p.brand 
+ FROM products AS p 
+ JOIN orders_to_products AS otp
+ ON p.id = otp.product_id
+ GROUP BY p.brand;
+
+ --- Топ-3 найпродаваніших брендів
+
+  SELECT count(*) AS sales, p.brand 
+ FROM products AS p 
+ JOIN orders_to_products AS otp
+ ON p.id = otp.product_id
+ GROUP BY p.brand
+ ORDER BY sales DESC
+ LIMIT 3;
+
+
+ -- Топ-5 моделей
+
+   SELECT count(*) AS sales, p.model, p.brand 
+ FROM products AS p 
+ JOIN orders_to_products AS otp
+ ON p.id = otp.product_id
+ GROUP BY p.model, p.brand
+ ORDER BY sales DESC
+ LIMIT 3;
+
+
+
+
+ /*
+
+Задача: знайти телефони які ніхто не купував
+
+ */
+
+ INSERT INTO products (category, price, quantity, brand, model)
+ VALUES (
+     'phones',
+     2000,
+     1,
+     'iPad',
+     'model 5'
+   ),
+   (
+     'phones',
+     1000,
+     1,
+     'superTel',
+     'model 10'
+   );
+
+
+-- Всі телефони, які купувались
+SELECT product_id, p.model
+FROM orders_to_products AS otp
+JOIN products AS p 
+ON p.id = otp.product_id
+GROUP BY product_id, p.model;
+
+
+--- Всі попередні випадки використання JOIN === INNER JOIN
+
+
+SELECT product_id, p.model
+FROM orders_to_products AS otp
+INNER JOIN products AS p 
+ON p.id = otp.product_id
+GROUP BY product_id, p.model;
+
+
+/*
+
+A JOIN B
+
+INNER JOIN - тільки те, що є і в А, і в В
+
+LEFT JOIN - те, що є в обох + унікальні з А
+RIGHT JOIN - те, що є в обох + унікальні з В
+
+
+
+*/
+
+SELECT count(*), p.id 
+FROM orders_to_products AS otp
+INNER JOIN products AS p 
+ON p.id = otp.product_id
+GROUP BY p.id;
+
+
+SELECT count(otp.order_id), p.id 
+FROM orders_to_products AS otp
+RIGHT JOIN products AS p 
+ON p.id = otp.product_id
+GROUP BY p.id
+ORDER BY p.id DESC;
