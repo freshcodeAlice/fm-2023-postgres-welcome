@@ -317,3 +317,5 @@ SELECT brand, sum(quantity)
 FROM products
 GROUP BY brand
 HAVING sum(quantity) > 1000;
+
+
