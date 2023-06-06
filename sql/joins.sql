@@ -619,3 +619,128 @@ GROUP BY product_id;
 
 
 
+/*
+Практика:
+
+6. Порахувати вартість всіх замовлень в магазині
+(вивести - замовлення, сума по замовленню)
+
+7. Порахувати середній чек по всьому магазину
+
+8. Витягти всі замовлення вище середнього чеку по магазину
+
+9. Витягти всіх користувачів, в яких кількість замовлень вище середнього 
+
+10. Витягти всіх користувачів, які зробили замовлень загальною сумою більше 20 000 
+*/
+
+
+--6
+
+SELECT order_id, sum(otp.quantity * p.price) 
+FROM orders_to_products AS otp
+JOIN products AS p 
+ON otp.order_id = p.id
+GROUP BY otp.order_id;
+
+
+--7
+SELECT avg(order_cost)
+  FROM (
+    SELECT order_id, sum(otp.quantity * p.price) AS order_cost
+    FROM orders_to_products AS otp
+    JOIN products AS p 
+    ON otp.order_id = p.id
+    GROUP BY otp.order_id
+  ) AS owc;
+
+
+---8 
+
+SELECT owc.* 
+  FROM (
+     SELECT order_id, sum(otp.quantity * p.price) AS order_cost
+    FROM orders_to_products AS otp
+    JOIN products AS p 
+    ON otp.order_id = p.id
+    GROUP BY otp.order_id
+  ) AS owc
+WHERE owc.order_cost > (
+  SELECT avg(order_cost)
+  FROM (
+    SELECT order_id, sum(otp.quantity * p.price) AS order_cost
+    FROM orders_to_products AS otp
+    JOIN products AS p 
+    ON otp.order_id = p.id
+    GROUP BY otp.order_id
+  ) AS owc);
+
+
+  ---- Рефактор за допомогою WITH
+
+
+/*
+WITH псевдонім таблиці AS підзапит, який повертає таблицю
+SELECT .... і ось тут можемо використувати таблицю з підзапит за її псевдонімом
+
+*/
+
+
+WITH orders_with_costs AS 
+    ( SELECT order_id, sum(otp.quantity * p.price) AS order_cost
+        FROM orders_to_products AS otp
+        JOIN products AS p 
+        ON otp.order_id = p.id
+        GROUP BY otp.order_id)
+SELECT owc.*
+FROM orders_with_costs AS owc
+WHERE owc.order_cost > (
+  SELECT avg(owc.order_cost)
+  FROM orders_with_costs AS owc
+);
+
+
+-----------
+
+
+--9
+
+-- Середня кількість замовлень на кожного користувача
+
+SELECT u.email, count(u.id)
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+GROUP BY u.id; 
+
+
+--- Всі користувачі, в яких кількість замовлень вище середньої
+
+SELECT u.*, count(u.id)
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+GROUP BY u.id
+HAVING count(u.id) > (
+  SELECT avg(uwa.amount)
+  FROM (
+    SELECT count(u.id) AS amount
+    FROM users AS u 
+    JOIN orders AS o 
+    ON u.id = o.customer_id
+    GROUP BY u.id
+  ) AS uwa
+); 
+
+
+WITH uwa AS (SELECT u.*, count(u.id) AS amount
+    FROM users AS u 
+    JOIN orders AS o 
+    ON u.id = o.customer_id
+    GROUP BY u.id)
+SELECT *
+FROM uwa
+WHERE amount > (
+  SELECT avg(uwa.amount) 
+  FROM uwa
+);
