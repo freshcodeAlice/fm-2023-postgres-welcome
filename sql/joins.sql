@@ -499,3 +499,123 @@ SELECT * FROM orders
 WHERE customer_id = 652;
 
 
+/*
+Практика
+
+1. Вартість кожного замовлення (ціна товару * кількість товару у замовленні)
+
+2. Витягти всі моделі конкретного замовлення
+
+3. Кількість позицій в певному замовленні
+
+4. Дані користувачів + інформація про кількість продуктів, які вони купили
+
+5. Знайти найпопулярніший телефон (кількість проданих екземплярів в нього найвища)
+
+*/
+
+--1
+SELECT otp.order_id, sum(otp.quantity * p.price)
+FROM orders_to_products AS otp
+JOIN products AS p 
+ON otp.product_id = p.id 
+GROUP BY otp.order_id;
+
+
+---- Перевірка
+--- 276 замовлення = 9994.00
+
+SELECT * FROM orders_to_products
+WHERE order_id = 276;
+-- було куплено 2 екземпляри товару 12
+
+
+ SELECT * FROM products
+ WHERE id = 12;
+ -- ціна цього товару 4997
+ -- підтверджуємо дані
+
+
+---2
+
+SELECT * 
+FROM 
+orders_to_products AS otp
+JOIN products AS p 
+ON otp.product_id = p.id
+WHERE otp.order_id = 381;
+
+
+
+---3
+SELECT otp.order_id, count(*) 
+FROM orders_to_products AS otp
+WHERE otp.order_id = 673
+GROUP BY otp.order_id;
+
+
+----> Всі замовлення з кількістю позицій у них
+
+SELECT otp.order_id, count(*) 
+FROM orders_to_products AS otp
+GROUP BY otp.order_id;
+
+
+
+--4
+SELECT u.*, count(otp.product_id)
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+JOIN orders_to_products AS otp
+ON o.id = otp.order_id
+GROUP BY u.id;
+
+
+----- ПЕревірка
+--- 652 id купив 6 різних продуктів
+
+SELECT *
+FROM orders 
+WHERE orders.customer_id = 652;
+--1633, 1634, 1635
+
+SELECT * FROM orders_to_products
+WHERE order_id IN (1633, 1634, 1635);
+--- 6 різних продуктів
+--- 13 екземплярів різних продуктів
+
+
+---- Користувачі + загальна кількість екземплярів продуктів, що вони купили (різновид попереднього запиту)
+
+SELECT u.*, sum(otp.quantity)
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+JOIN orders_to_products AS otp
+ON o.id = otp.order_id
+GROUP BY u.id;
+
+
+---5
+
+SELECT p.*, sum(otp.quantity) AS saled
+FROM products AS p 
+JOIN orders_to_products AS otp
+ON p.id = otp.product_id
+GROUP BY p.id
+ORDER BY saled DESC
+LIMIT 1;
+
+
+--- ПЕревіряємо
+-- id 12
+
+SELECT sum(quantity) 
+FROM orders_to_products
+WHERE product_id = 12
+GROUP BY product_id;
+
+
+
+
