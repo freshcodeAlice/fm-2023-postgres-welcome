@@ -392,3 +392,110 @@ RIGHT JOIN products AS p
 ON p.id = otp.product_id
 GROUP BY p.id
 ORDER BY p.id DESC;
+
+
+-- продукти, які ніхто ніколи не купував
+
+SELECT p.id, p.model, p.brand, otp.order_id
+FROM products AS p
+LEFT JOIN orders_to_products AS otp
+ON p.id = otp.product_id
+WHERE otp.product_id IS NULL;
+
+
+/*
+Знайти всіх користувачів, які коли-небудь робити замовлення в нашому магазині
+
+
+*/
+
+--v1
+SELECT u.*
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+GROUP BY u.id;
+
+--v2
+SELECT DISTINCT u.id, u.first_name, u.last_name
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id;
+
+--- Юзери, які не робили замовлень
+
+
+SELECT u.*
+FROM users AS u 
+LEFT JOIN orders AS o 
+ON u.id = o.customer_id
+WHERE o.customer_id IS NULL
+GROUP BY u.id;
+
+
+/*
+1. Знайти email всіх користувачів, які купували product #5
+
+Задачка з *:
+2. знайти мейли всіх користувачів, які купували телефони Samsung
+
+*/
+
+
+--1
+SELECT u.email
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+JOIN orders_to_products AS otp
+ON o.id = otp.order_id
+WHERE otp.product_id = 10;
+
+
+-- Перевіряємо
+
+SELECT * FROM users
+WHERE email = 'israel.robledo@example.com'; -- id - 29
+
+SELECT * FROM orders
+WHERE customer_id = 29; --76
+
+
+SELECT * FROM orders_to_products
+WHERE order_id = 76; -- Підтверджуємо, що в цьому замовленні є товар №10
+
+
+
+-----------
+
+--2
+
+SELECT u.email
+FROM users AS u 
+JOIN orders AS o 
+ON u.id = o.customer_id
+JOIN orders_to_products AS otp
+ON o.id = otp.order_id
+JOIN products AS p 
+ON p.id = otp.product_id
+WHERE p.brand = 'Samsung'
+GROUP BY u.email;
+
+
+/*
+Вивести всіх користувачів та кількість їхніх замовлень
+
+*/
+
+
+SELECT u.*, count(o.id) AS order_amount
+FROM users AS u 
+LEFT JOIN orders AS o 
+ON u.id = o.customer_id
+GROUP BY u.id;
+
+-- Перевіряємо
+SELECT * FROM orders
+WHERE customer_id = 652;
+
+
