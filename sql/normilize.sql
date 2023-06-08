@@ -152,3 +152,98 @@ CREATE TABLE students_to_teachers
     student_id int REFERENCES students(id),
     PRIMARY KEY (teacher_id, student_id)
 );   --- NFBC
+
+
+
+/*
+Single source of truth (єдине джерело істини) 
+Потрібно зберігати у таблицях первинні факти, які неможливо вивести з інших даних, які ми вже зберігаємо
+
+*/
+
+
+
+---4NF
+
+/*
+Ресторани (restaurants)
+роблять піци
+Піци розвозять різні служби доставки (delivery_services)
+
+В мережі багато ресторанів в різних частинах міста,
+ресторани збертаються до тих служб доставки, які працюють в тих самих районах, де сам ресторан
+Служби доставки можуть працювати в декількох районах
+
+*/
+
+CREATE TABLE restaurants (
+    id serial PRIMARY KEY
+);
+
+CREATE TABLE delivery_services (
+    id serial PRIMARY KEY
+);
+
+CREATE TABLE restaurants_to_deliveries (
+    restaurant_id int REFERENCES restaurants(id),
+    delivery_id int REFERENCES delivery_services(id),
+    pizza_type varchar(300) NOT NULL,
+    PRIMARY KEY (restaurant_id, delivery_id)
+);
+
+INSERT INTO restaurants_to_deliveries VALUES
+(1, 1, 'pepperoni'),
+(1, 1, 'sea'),
+(1, 1, '4chease'),
+(1, 1, 'hawaii'),
+(1, 2, 'pepperoni'),
+(1, 2, 'sea'),
+(1, 2, 'hawaii'),
+(2, 1, 'pepperoni'),
+(2, 1, 'sea'),
+(2, 1, 'special'),
+(2, 3, 'pepperoni'),
+(2, 3, 'special');
+
+
+/*
+Вирішення:
+створити таблицю піц, побудувати відповідність між ПІЦАМИ і РЕСТОРАНАМИ,а вже ресторани пов'язані з конкретними службами доставки
+
+*/
+
+
+CREATE TABLE pizzas (
+    name varchar(300) PRIMARY KEY
+);
+
+CREATE TABLE restaurants_to_pizzas (
+    restaurant_id int REFERENCES restaurants(id),
+    pizza_type varchar(300) REFERENCES pizzas(name),
+    PRIMARY KEY (restaurant_id, pizza_type)
+);
+
+
+CREATE TABLE restaurants_to_deliveries (
+    restaurant_id int REFERENCES restaurants(id),
+    delivery_id int REFERENCES delivery_services(id),
+    PRIMARY KEY (restaurant_id, delivery_id)
+);
+
+---як виглядатиме інсерт
+
+INSERT INTO restaurants_to_pizzas
+(1, 'pepperoni'),
+(1, 'hawaii'),
+(1, 'sea'),
+(1, '4chease'),
+(2, 'sea'),
+(2, 'special');
+
+INSERT INTO restaurants_to_deliveries
+(1, 1),
+(1, 2),
+(2, 1),
+(2, 3);
+
+---- 4NF!
