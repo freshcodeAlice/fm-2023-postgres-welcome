@@ -88,3 +88,67 @@ CREATE TABLE departments (
     name varchar(300) PRIMARY KEY,
     phone_number int
 );
+
+
+
+/* NFBC (Нормальна форма Бойса-Кодда) */
+
+/* 
+Приклад:
+Викладачі, студенти, предмети
+(teachers, students, subjects)
+
+Студенти ходять на предмети (різні)
+1 викладач може вести 1 предмет,
+у студента може бути багато предметів
+1 предмет слухає багато студентів
+
+teachers  n:1  subjects
+students  m:n  subjects
+students  m:n  teachers
+*/
+
+CREATE TABLE students(
+    id serial PRIMARY KEY,
+    name varchar(300)
+    );
+
+CREATE TABLE teachers (
+    id serial PRIMARY KEY,
+    name varchar(300)
+);
+
+
+CREATE TABLE students_to_teachers_to_subjects
+(
+    teacher_id int REFERENCES teachers(id),
+    student_id int REFERENCES students(id),
+    subject varchar(300) 
+    PRIMARY KEY (teacher_id, student_id)
+);
+
+INSERT INTO students_to_teachers_to_subjects VALUES
+(1, 1, 'biology'),
+(1, 2, 'biology'),
+(2, 1, 'math'),
+(2, 2, 'phisics');   ------ <-- this is a problem!
+
+----- Solution: ---
+
+
+CREATE TABLE subjects(
+    name varchar(300) PRIMARY KEY,
+);
+
+CREATE TABLE teachers (
+    id serial PRIMARY KEY,
+    name varchar(300),
+    subject varchar(300 REFERENCES subjects(name))
+);
+
+CREATE TABLE students_to_teachers
+(
+    teacher_id int REFERENCES teachers(id),
+    student_id int REFERENCES students(id),
+    PRIMARY KEY (teacher_id, student_id)
+);   --- NFBC
