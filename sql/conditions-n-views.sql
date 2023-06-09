@@ -193,3 +193,29 @@ LEFT JOIN orders AS o
 ON u.id = o.customer_id
 GROUP BY u.id
 ORDER BY u.id DESC;
+
+
+----COALESCE, NULLIF, GRETEST/LEAST ---
+
+-- Аналог конструкції || 
+
+SELECT users.*, COALESCE(weight, 0) AS user_weight
+FROM users;
+
+
+---- NULLIF
+
+-- Якщо два аргумента однакові, результат - NULL
+-- якщо різні - результатом буде перше значення
+SELECT NULLIF(NULL, NULL);
+
+
+---- GREATEST, LEAST
+
+SELECT LEAST (23, 12, 4, 1, 45);
+
+
+--- Вивести ціни телефонів, якщо ціна менше 2 000, вивести рівно 2 000
+
+SELECT id, brand, model, GREATEST(price, 2000) AS price
+FROM products;
