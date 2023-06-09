@@ -219,3 +219,58 @@ SELECT LEAST (23, 12, 4, 1, 45);
 
 SELECT id, brand, model, GREATEST(price, 2000) AS price
 FROM products;
+
+
+
+
+/* ENUM (власний тип даних) */
+
+--- Змінити таблицю orders
+-- Стовбець is_done переробити на стовбець "status"
+-- Мати такі статуси:
+-- new
+-- processing
+-- delivery
+-- done
+
+
+/* Створюємо тип даних  */
+
+CREATE TYPE order_status AS ENUM ('new', 'processing', 'delivery', 'done');
+
+
+ALTER TABLE orders
+RENAME COLUMN is_done TO status;  -- перейменовуємо стовбець
+
+ALTER TABLE orders
+ALTER COLUMN status TYPE order_status;
+---- якщо б в колонці status не було даних, то ця команда успішно змінила би наш тип даних 
+
+
+ALTER TABLE orders
+ALTER COLUMN status TYPE order_status
+USING (
+    CASE status
+        WHEN false THEN 'new'
+        WHEN true THEN 'done'
+        ELSE 'processing'
+    END
+)::order_status;
+
+
+---- Якщо б у стовпця status було DEFAULT-значення, то воно автоматично не кастується!
+-- В такому випадку слід знести DEFAULT, кастанути (привести) тип даних і вже після цього додавати новий DEFAULT
+
+ALTER TABLE orders
+ALTER COLUMN status SET DEFAULT 'new';
+
+
+UPDATE orders
+SET status = 'processing'
+WHERE id BETWEEN 100 AND 1000;
+
+INSERT INTO orders (customer_id, status)
+VALUES (
+   1,
+   'new'
+  );
