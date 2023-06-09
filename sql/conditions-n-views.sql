@@ -274,3 +274,92 @@ VALUES (
    1,
    'new'
   );
+
+
+/* VIEWS - Представлення (подання - представление) */
+
+
+--- Вивести всіх юзерів з кількістю їхніх замовлень
+
+ SELECT u.*, count(o.id) 
+ FROM users AS u 
+ JOIN orders AS o
+ ON u.id = o.customer_id
+ GROUP BY u.id, u.email;
+
+ /*
+CREATE VIEW назва_представлення AS (підзапит, який повертає табличний вираз)
+
+ */
+
+
+ CREATE VIEW users_with_order_amounts AS (
+     SELECT u.*, count(o.id) 
+ FROM users AS u 
+ JOIN orders AS o
+ ON u.id = o.customer_id
+ GROUP BY u.id, u.email
+ );
+
+
+ SELECT * 
+ FROM users_with_order_amounts AS uwoa
+ JOIN orders AS o
+ON uwoa.id = o.customer_id
+WHERE o.id = 15;
+
+
+/*
+Створити представлення всіх замовлень з їхньою повною вартістю (ціна моделі*кількість куплених екземплярів)
+
+*/
+
+SELECT o.id, o.customer_id, o.created_at, o.status, sum(otp.quantity * p.price) AS sum
+FROM orders AS o
+JOIN orders_to_products AS otp 
+ON o.id = otp.order_id
+JOIN products AS p 
+ON otp.product_id = p.id
+GROUP BY o.id;
+
+CREATE VIEW orders_with_sum AS (
+    SELECT o.id, o.customer_id, o.created_at, o.status, sum(otp.quantity * p.price) AS sum
+FROM orders AS o
+JOIN orders_to_products AS otp 
+ON o.id = otp.order_id
+JOIN products AS p 
+ON otp.product_id = p.id
+GROUP BY o.id
+);
+
+
+/*
+Вивести всі замовлення вартістю більше середнього чеку магазину
+
+*/
+
+SELECT * 
+FROM orders_with_sum
+WHERE sum > (
+    SELECT avg(sum)
+    FROM orders_with_sum
+); 
+
+
+/*
+Максимальна вкладеність view на основі іншої view - 32
+Максимум 1024 стовпці
+
+*/
+
+
+/*
+ДЗ:
+
+Створити вью для отримання:
+
+1. Топ-10 найпродаваніших телефонів
+2. Топ-10 найдорожчіх телефонів
+3. Топ-5 користувачів, які залишили найбільше грошей в нашому магазині
+
+*/
